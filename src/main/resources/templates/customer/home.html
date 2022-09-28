@@ -23,8 +23,12 @@
                         '        <td>Action</td>\n' +
                         '    </tr>';
 
-                    for (let i = 0; i < data.length; i++) {
-                        content += getCustomer(data[i]);
+                    console.log(data);
+                    if(data==null){
+                        document.getElementById('customers').innerHTML = content;
+                    }else
+                    for (let i = 0; i < data.content.length; i++) {
+                        content += getCustomer(data.content[i]);
                     }
                     document.getElementById('customers').innerHTML = content;
                 }
@@ -47,7 +51,9 @@
                 type: "POST",
                 data: JSON.stringify(newCustomer),
                 url: "/api/customers",
-                success: successHandler
+                success: function (data){
+                    successHandler();
+                }
             });
 
             event.preventDefault();
@@ -61,7 +67,8 @@
                 url: `/api/customers/${id}`,
                 success: function (data) {
                     console.log(id);
-                    successHandler();
+
+                        successHandler();
                 }
 
             })
@@ -116,6 +123,37 @@
             event.preventDefault();
         }
 
+        function searchCustomer(){
+            let search= $('#search').val();
+
+            $.ajax({
+                headers:{
+                    'Accept':'application/json',
+                    'Content-Type': 'application/json'
+                },
+                type:"GET",
+                url: `/api/customers?search=${search}`,
+                success:function (data){
+
+                    let str = '    <tr>\n' +
+                        '        <td>ID</td>\n' +
+                        '        <td>Name</td>\n' +
+                        '        <td>Address</td>\n' +
+                        '        <td>Action</td>\n' +
+                        '    </tr>';
+
+                    for (let i = 0; i < data.content.length; i++) {
+                        str += getCustomer(data.content[i]);
+                    }
+                    document.getElementById('customers').innerHTML = str;
+                }
+            })
+
+            event.preventDefault();
+        }
+
+
+
 
         // $(document).ready(function (){
         //     $('.deleteCustomer').click(function (event){
@@ -136,6 +174,11 @@
 </head>
 <body>
 <h1>Customer</h1>
+<a href="/api/customers/home">Home</a>
+<form >
+    <input type="text" id="search" name="search" placeholder="search">
+    <input type="submit" value="Search" onclick="searchCustomer()">
+</form>
 <form id="addCustomer">
     <table>
         <tr>
